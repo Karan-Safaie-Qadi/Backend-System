@@ -103,7 +103,7 @@ class ArticleService
     public static function addSection(int $articleId, array $sd): array
     {
         if (!Article::find($articleId)) throw new \RuntimeException('Article not found.');
-        return ArticleSection::find(ArticleSection::addSection($articleId, $sd['title'] ?? '', $sd['section_type'] ?? 'text', $sd['content'] ?? null, $sd['list_items'] ?? null, $sd['table_data'] ?? null, $sd['image'] ?? null, $sd['sort_order'] ?? null));
+        return ArticleSection::find((int)ArticleSection::addSection($articleId, $sd['title'] ?? '', $sd['section_type'] ?? 'text', $sd['content'] ?? null, $sd['list_items'] ?? null, $sd['table_data'] ?? null, $sd['image'] ?? null, $sd['sort_order'] ?? null));
     }
 
     public static function updateSection(int $sectionId, array $data): array
