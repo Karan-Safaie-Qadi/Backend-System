@@ -72,7 +72,7 @@ class UserService
         User::deleteRecord($id);
     }
 
-    public static function getAdmins(): array
+    public static function getAdmins(): array: array
     {
         return User::getAdmins();
     }
