@@ -2,7 +2,7 @@
 
 namespace App\Core;
 
-class Model extends \Models\Model
+abstract class Model extends \Models\Model
 {
     protected bool $useTimestamps = true;
     protected string $createdAtColumn = 'created_at';

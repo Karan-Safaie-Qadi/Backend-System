@@ -52,7 +52,7 @@ class SystemService
 
     public static function sanitizeInput(string $input): string
     {
-        return htmlspecialchars(strip_tags(trim($input)), ENT_QUOTES, 'UTF-8');
+        return strip_tags(trim($input));
     }
 
     public static function generateToken(int $length = 32): string { return bin2hex(random_bytes($length)); }
