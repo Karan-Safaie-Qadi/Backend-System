@@ -9,25 +9,25 @@ use App\Services\AuthService;
 
 class AuthServiceTest extends TestCase
 {
-    public function testRegisterValidationEmptyUsername()
+    public function testRegisterValidationEmptyUsername(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         AuthService::register(['username' => '']);
     }
 
-    public function testRegisterValidationShortPassword()
+    public function testRegisterValidationShortPassword(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         AuthService::register(['username' => 'test', 'password' => '123']);
     }
 
-    public function testRegisterValidationNoEmail()
+    public function testRegisterValidationNoEmail(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         AuthService::register(['username' => 'test', 'password' => '12345678']);
     }
 
-    public function testLoginWithInvalidCredentials()
+    public function testLoginWithInvalidCredentials(): void
     {
         $this->expectException(\RuntimeException::class);
         AuthService::login('nonexistent_user', 'wrong_password');
