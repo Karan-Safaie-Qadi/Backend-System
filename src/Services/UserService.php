@@ -10,26 +10,13 @@ class UserService
     public static function getUser(int $id): array
     {
         $user = User::find($id);
-        if (!$user) {
-            throw new \RuntimeException('User not found.');
-        }
+        if (!$user) throw new \RuntimeException('User not found.');
         return $user;
     }
 
-    public static function getByUsername(string $username): ?array
-    {
-        return User::findByUsername($username);
-    }
-
-    public static function getByEmail(string $email): ?array
-    {
-        return User::findByEmail($email);
-    }
-
-    public static function getByPhone(string $phone): ?array
-    {
-        return User::findByPhone($phone);
-    }
+    public static function getByUsername(string $username): ?array { return User::findByUsername($username); }
+    public static function getByEmail(string $email): ?array { return User::findByEmail($email); }
+    public static function getByPhone(string $phone): ?array { return User::findByPhone($phone); }
 
     public static function getAllUsers(int $page = 1, int $perPage = 20): array
     {
@@ -46,69 +33,40 @@ class UserService
         if (isset($data['access_level']) && $data['access_level'] > 1) {
             AccessControl::requireLevel($actorLevel, 'owner');
         }
-
-        if (User::findByUsername($data['username'])) {
-            throw new \InvalidArgumentException('Username already exists.');
-        }
-
-        $password = $data['password'] ?? bin2hex(random_bytes(8));
-        if (isset($data['password'])) {
-            $password = $data['password'];
-        }
+        if (User::findByUsername($data['username'])) throw new \InvalidArgumentException('Username already exists.');
 
         $userData = [
             'username' => $data['username'],
-            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'password' => password_hash($data['password'] ?? bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
             'display_name' => $data['display_name'] ?? $data['username'],
             'access_level' => $data['access_level'] ?? 1,
             'is_active' => $data['is_active'] ?? 1,
         ];
-
-        if (!empty($data['email'])) $userData['email'] = $data['email'];
-        if (!empty($data['phone'])) $userData['phone'] = $data['phone'];
-        if (!empty($data['avatar'])) $userData['avatar'] = $data['avatar'];
-
-        $userId = User::create($userData);
-        return User::find($userId);
+        foreach (['email', 'phone', 'avatar'] as $f) {
+            if (!empty($data[$f])) $userData[$f] = $data[$f];
+        }
+        return User::find(User::create($userData));
     }
 
     public static function updateUser(int $id, array $data, int $actorLevel): array
     {
         $user = self::getUser($id);
-
-        if (isset($data['access_level'])) {
-            if ($data['access_level'] >= 2 && $user['access_level'] >= 2) {
-                AccessControl::requireLevel($actorLevel, 'owner');
-            }
+        if (isset($data['access_level']) && $data['access_level'] >= 2 && $user['access_level'] >= 2) {
+            AccessControl::requireLevel($actorLevel, 'owner');
         }
-
-        $updateData = [];
-
-        foreach (['display_name', 'email', 'phone', 'avatar', 'is_active', 'access_level'] as $field) {
-            if (isset($data[$field])) {
-                $updateData[$field] = $data[$field];
-            }
+        $update = [];
+        foreach (['display_name', 'email', 'phone', 'avatar', 'is_active', 'access_level'] as $f) {
+            if (isset($data[$f])) $update[$f] = $data[$f];
         }
-
-        if (!empty($updateData)) {
-            User::updateRecord($id, $updateData);
-        }
-
+        if ($update) User::updateRecord($id, $update);
         return User::find($id);
     }
 
     public static function deleteUser(int $id, int $actorLevel): void
     {
         $user = self::getUser($id);
-
-        if ($user['access_level'] >= 2) {
-            AccessControl::requireLevel($actorLevel, 'owner');
-        }
-
-        if ($id === $actorLevel) {
-            throw new \RuntimeException('You cannot delete yourself.');
-        }
-
+        if ($user['access_level'] >= 2) AccessControl::requireLevel($actorLevel, 'owner');
+        if ($id === $actorLevel) throw new \RuntimeException('You cannot delete yourself.');
         User::deleteRecord($id);
     }
 
