@@ -21,14 +21,10 @@ class Config
     {
         $keys = explode('.', $key);
         $value = self::$config;
-
         foreach ($keys as $k) {
-            if (!is_array($value) || !array_key_exists($k, $value)) {
-                return $default;
-            }
+            if (!is_array($value) || !array_key_exists($k, $value)) return $default;
             $value = $value[$k];
         }
-
         return $value;
     }
 
@@ -36,14 +32,10 @@ class Config
     {
         $keys = explode('.', $key);
         $target = &self::$config;
-
         foreach ($keys as $k) {
-            if (!isset($target[$k])) {
-                $target[$k] = [];
-            }
+            if (!isset($target[$k])) $target[$k] = [];
             $target = &$target[$k];
         }
-
         $target = $value;
     }
 
