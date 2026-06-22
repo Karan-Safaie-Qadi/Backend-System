@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await Pages.init();
 
+    const themeBtn = Utils.$('#themeToggle');
+    if (themeBtn) themeBtn.onclick = () => Theme.toggle();
+
     const connStatus = Utils.$('#connStatus');
     if (connStatus) {
         const connected = await API.checkConnection();

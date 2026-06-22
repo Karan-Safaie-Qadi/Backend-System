@@ -1,9 +1,8 @@
 window.API = {
-    baseUrl: '../../api/index.php',
+    baseUrl: window.location.pathname + '?api=',
 
     async request(endpoint, method = 'GET', data = null, params = {}) {
-        const url = new URL(this.baseUrl, window.location.origin);
-        url.searchParams.set('endpoint', endpoint);
+        const url = new URL(this.baseUrl + endpoint, window.location.origin);
         for (const [k, v] of Object.entries(params)) {
             url.searchParams.set(k, v);
         }

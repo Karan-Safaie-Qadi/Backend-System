@@ -2,14 +2,49 @@
 
 require_once __DIR__ . '/../bootstrap.php';
 
+if (isset($_GET['api'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+
+    $endpoint = $_GET['api'];
+    $apiFile = __DIR__ . "/api/$endpoint.php";
+
+    if (file_exists($apiFile)) {
+        $input = json_decode(file_get_contents('php://input'), true) ?? [];
+        try {
+            $response = (function() use ($apiFile, $input) {
+                require $apiFile;
+                return $response ?? ['status' => 'error', 'message' => 'No response'];
+            })();
+        } catch (\InvalidArgumentException $e) {
+            http_response_code(400);
+            $response = ['status' => 'error', 'message' => $e->getMessage()];
+        } catch (\RuntimeException $e) {
+            http_response_code(500);
+            $response = ['status' => 'error', 'message' => $e->getMessage()];
+        } catch (\Exception $e) {
+            http_response_code(500);
+            $response = ['status' => 'error', 'message' => \App\Core\Config::get('app.debug') ? $e->getMessage() : 'Internal server error'];
+        }
+    } else {
+        http_response_code(404);
+        $response = ['status' => 'error', 'message' => "Endpoint '$endpoint' not found"];
+    }
+
+    echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
+
 $lang = $_GET['lang'] ?? 'fa';
 $lang = in_array($lang, ['fa', 'en']) ? $lang : 'fa';
-
 $i18n = require __DIR__ . "/i18n/$lang.php";
-
-function setActive($path) {
-    return $_SERVER['REQUEST_URI'] === $path ? 'active' : '';
-}
 ?>
 <!DOCTYPE html>
 <html lang="<?= $lang === 'fa' ? 'fa' : 'en' ?>" dir="<?= $lang === 'fa' ? 'rtl' : 'ltr' ?>">
@@ -22,6 +57,7 @@ function setActive($path) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <script src="assets/js/theme.js?v=1.0"></script>
     <script>
         window.I18N = <?= json_encode($i18n, JSON_UNESCAPED_UNICODE) ?>;
         window.LANG = '<?= $lang ?>';
@@ -76,7 +112,7 @@ function setActive($path) {
                     <h1 id="pageTitle" data-i18n="page_dashboard">Dashboard</h1>
                 </div>
                 <div class="topbar-actions">
-                    <button class="theme-toggle" id="themeToggle" onclick="Theme.toggle()" title="Toggle theme">🌓</button>
+                    <button class="theme-toggle" id="themeToggle">🌓</button>
                     <div class="connection-status" id="connStatus">
                         <span class="status-dot"></span>
                         <span data-i18n="checking">Checking...</span>
