@@ -20,8 +20,12 @@ abstract class Model extends \Models\Model
         $where = [];
         $params = [];
         foreach ($conditions as $col => $val) {
-            $where[] = "`$col` = ?";
-            $params[] = $val;
+            if ($val === null) {
+                $where[] = "`$col` IS NULL";
+            } else {
+                $where[] = "`$col` = ?";
+                $params[] = $val;
+            }
         }
         return self::selectOne("SELECT * FROM `$table` WHERE " . implode(" $operator ", $where) . " LIMIT 1", $params);
     }
@@ -29,6 +33,9 @@ abstract class Model extends \Models\Model
     public static function where(string $column, $value, string $operator = '='): array
     {
         $table = (new static())->table;
+        if ($value === null && in_array(strtoupper($operator), ['IS', 'IS NOT'], true)) {
+            return self::select("SELECT * FROM `$table` WHERE `$column` $operator NULL");
+        }
         return self::select("SELECT * FROM `$table` WHERE `$column` $operator ?", [$value]);
     }
 
