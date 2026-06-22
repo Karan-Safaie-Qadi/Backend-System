@@ -9,13 +9,13 @@ use App\Models\Category;
 
 class CategoryTest extends TestCase
 {
-    public function testCategoryExtendsModel()
+    public function testCategoryExtendsModel(): void
     {
         $reflection = new \ReflectionClass(Category::class);
         $this->assertEquals('App\Core\Model', $reflection->getParentClass()->getName());
     }
 
-    public function testCategoryTableName()
+    public function testCategoryTableName(): void
     {
         $reflection = new \ReflectionClass(Category::class);
         $prop = $reflection->getProperty('table');
@@ -23,7 +23,7 @@ class CategoryTest extends TestCase
         $this->assertEquals('categories', $prop->getValue(new Category()));
     }
 
-    public function testHasRequiredMethods()
+    public function testHasRequiredMethods(): void
     {
         $methods = ['findBySlug', 'getByType', 'getCategoryTree', 'searchCategories'];
         foreach ($methods as $method) {
