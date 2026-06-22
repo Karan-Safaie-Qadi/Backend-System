@@ -9,20 +9,20 @@ use App\Core\Model;
 
 class ModelTest extends TestCase
 {
-    public function testModelIsAbstract()
+    public function testModelIsAbstract(): void
     {
         $reflection = new \ReflectionClass(Model::class);
         $this->assertTrue($reflection->isAbstract());
     }
 
-    public function testModelExtendsBaseModel()
+    public function testModelExtendsBaseModel(): void
     {
         $reflection = new \ReflectionClass(Model::class);
         $parent = $reflection->getParentClass();
         $this->assertEquals('Models\Model', $parent->getName());
     }
 
-    public function testModelHasRequiredMethods()
+    public function testModelHasRequiredMethods(): void
     {
         $methods = [
             'find', 'all', 'create', 'updateRecord', 'deleteRecord',
