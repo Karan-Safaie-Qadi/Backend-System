@@ -9,33 +9,33 @@ use App\Services\SystemService;
 
 class SystemServiceTest extends TestCase
 {
-    public function testGenerateSlug()
+    public function testGenerateSlug(): void
     {
         $this->assertEquals('hello-world', SystemService::generateSlug('Hello World'));
         $this->assertEquals('test-slug', SystemService::generateSlug('Test Slug!'));
         $this->assertEquals('a-b-c', SystemService::generateSlug('  A  B  C  '));
     }
 
-    public function testSanitizeInput()
+    public function testSanitizeInput(): void
     {
         $this->assertEquals('alert("xss")', SystemService::sanitizeInput('<script>alert("xss")</script>'));
         $this->assertEquals('hello', SystemService::sanitizeInput('  <b>hello</b>  '));
     }
 
-    public function testGenerateToken()
+    public function testGenerateToken(): void
     {
         $token = SystemService::generateToken();
         $this->assertEquals(64, strlen($token));
         $this->assertMatchesRegularExpression('/^[a-f0-9]+$/', $token);
     }
 
-    public function testGenerateTokenCustomLength()
+    public function testGenerateTokenCustomLength(): void
     {
         $token = SystemService::generateToken(16);
         $this->assertEquals(32, strlen($token));
     }
 
-    public function testRegisterAndCallMethod()
+    public function testRegisterAndCallMethod(): void
     {
         SystemService::registerMethod('multiply', function($a, $b) {
             return $a * $b;
@@ -45,26 +45,26 @@ class SystemServiceTest extends TestCase
         $this->assertTrue(SystemService::hasMethod('multiply'));
     }
 
-    public function testCallNonExistentMethod()
+    public function testCallNonExistentMethod(): void
     {
         $this->expectException(\RuntimeException::class);
         SystemService::callMethod('nonexistent');
     }
 
-    public function testGetRegisteredMethods()
+    public function testGetRegisteredMethods(): void
     {
         SystemService::registerMethod('test_method', function() {});
         $methods = SystemService::getRegisteredMethods();
         $this->assertContains('test_method', $methods);
     }
 
-    public function testDateFormat()
+    public function testDateFormat(): void
     {
         $result = SystemService::dateFormat('2024-01-15 10:30:00', 'Y/m/d');
         $this->assertEquals('2024/01/15', $result);
     }
 
-    public function testTimeAgo()
+    public function testTimeAgo(): void
     {
         $result = SystemService::timeAgo(date('Y-m-d H:i:s'));
         $this->assertEquals('just now', $result);
