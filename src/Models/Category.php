@@ -31,32 +31,17 @@ class Category extends Model
 
     public static function getCategoryTree(string $type = null): array
     {
-        $condition = $type ? "WHERE type = ?" : "";
-        $params = $type ? [$type] : [];
-
-        $categories = self::select(
-            "SELECT * FROM categories $condition ORDER BY parent_id IS NULL DESC, parent_id, sort_order",
-            $params
-        );
-
+        $cond = $type ? "WHERE type = ?" : "";
+        $cats = self::select("SELECT * FROM categories $cond ORDER BY parent_id IS NULL DESC, parent_id, sort_order", $type ? [$type] : []);
         $tree = [];
         $children = [];
-
-        foreach ($categories as $cat) {
-            if ($cat['parent_id'] === null) {
-                $cat['children'] = [];
-                $tree[$cat['id']] = $cat;
-            } else {
-                $children[$cat['parent_id']][] = $cat;
-            }
+        foreach ($cats as $c) {
+            if ($c['parent_id'] === null) { $c['children'] = []; $tree[$c['id']] = $c; }
+            else { $children[$c['parent_id']][] = $c; }
         }
-
-        foreach ($children as $parentId => $childList) {
-            if (isset($tree[$parentId])) {
-                $tree[$parentId]['children'] = $childList;
-            }
+        foreach ($children as $pid => $list) {
+            if (isset($tree[$pid])) $tree[$pid]['children'] = $list;
         }
-
         return array_values($tree);
     }
 
@@ -64,9 +49,7 @@ class Category extends Model
     {
         return self::select(
             "SELECT c.*, (SELECT COUNT(*) FROM products p WHERE p.category_id = c.id) as product_count
-             FROM categories c
-             WHERE c.type = 'product'
-             ORDER BY c.sort_order"
+             FROM categories c WHERE c.type = 'product' ORDER BY c.sort_order"
         );
     }
 
@@ -74,9 +57,7 @@ class Category extends Model
     {
         return self::select(
             "SELECT c.*, (SELECT COUNT(*) FROM articles a WHERE a.category_id = c.id) as article_count
-             FROM categories c
-             WHERE c.type = 'article'
-             ORDER BY c.sort_order"
+             FROM categories c WHERE c.type = 'article' ORDER BY c.sort_order"
         );
     }
 
