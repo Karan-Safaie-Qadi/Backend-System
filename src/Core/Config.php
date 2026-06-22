@@ -10,8 +10,10 @@ class Config
     {
         $files = glob($path . '/*.php');
         foreach ($files as $file) {
-            $key = basename($file, '.php');
-            self::$config[$key] = require $file;
+            $config = require $file;
+            foreach ($config as $key => $value) {
+                self::$config[$key] = $value;
+            }
         }
     }
 
