@@ -44,9 +44,7 @@ class User extends Model
 
     public static function getAdmins(): array
     {
-        return self::select(
-            "SELECT * FROM users WHERE access_level >= 2 ORDER BY access_level DESC"
-        );
+        return self::select("SELECT * FROM users WHERE access_level >= 2 ORDER BY access_level DESC");
     }
 
     public static function getRegularUsers(): array
@@ -58,7 +56,7 @@ class User extends Model
     {
         return self::select(
             "SELECT * FROM users WHERE username LIKE ? OR email LIKE ? OR phone LIKE ? OR display_name LIKE ?",
-            ["%$query%", "%$query%", "%$query%", "%$query%"]
+            array_fill(0, 4, "%$query%")
         );
     }
 
@@ -90,10 +88,7 @@ class User extends Model
 
     public static function clearPasswordResetToken(int $id): void
     {
-        self::updateRecord($id, [
-            'password_reset_token' => null,
-            'password_reset_expires' => null,
-        ]);
+        self::updateRecord($id, ['password_reset_token' => null, 'password_reset_expires' => null]);
     }
 
     public static function updatePassword(int $id, string $hashedPassword): void
@@ -128,18 +123,12 @@ class User extends Model
 
     public static function countByAccessLevel(int $level): int
     {
-        $result = self::selectOne(
-            "SELECT COUNT(*) as count FROM users WHERE access_level = ?",
-            [$level]
-        );
-        return (int)($result['count'] ?? 0);
+        $r = self::selectOne("SELECT COUNT(*) as c FROM users WHERE access_level = ?", [$level]);
+        return (int)($r['c'] ?? 0);
     }
 
     public static function getRecentUsers(int $limit = 10): array
     {
-        return self::select(
-            "SELECT * FROM users ORDER BY created_at DESC LIMIT ?",
-            [$limit]
-        );
+        return self::select("SELECT * FROM users ORDER BY created_at DESC LIMIT ?", [$limit]);
     }
 }
