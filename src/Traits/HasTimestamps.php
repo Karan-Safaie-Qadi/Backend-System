@@ -11,11 +11,7 @@ trait HasTimestamps
     protected function addTimestamps(array &$data, bool $isUpdate = false): void
     {
         $now = date('Y-m-d H:i:s');
-
-        if (!$isUpdate) {
-            $data[$this->createdAtColumn] ??= $now;
-        }
-
+        if (!$isUpdate) $data[$this->createdAtColumn] ??= $now;
         $data[$this->updatedAtColumn] ??= $now;
     }
 }
