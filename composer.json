@@ -1,0 +1,22 @@
+{
+    "name": "karan-safaie-qadi/backend-system",
+    "description": "A complete OOP backend management system built on PDO-Module",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4",
+        "karan-safaie-qadi/pdo-module": "^1.0",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Karan Safaie Qadi",
+            "email": "karensefaie@gmail.com"
+        }
+    ]
+}
