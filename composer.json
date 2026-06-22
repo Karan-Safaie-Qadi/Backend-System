@@ -34,6 +34,11 @@
             "homepage": "https://github.com/Karan-Safaie-Qadi"
         }
     ],
+    "scripts": {
+        "test": "phpunit",
+        "lint": "find src -name '*.php' -exec php -l {} \\;",
+        "start": "php -S localhost:8000 -t public/"
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
