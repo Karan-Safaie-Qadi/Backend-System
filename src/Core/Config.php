@@ -19,7 +19,7 @@ class Config
         }
     }
 
-    public static function get(string $key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
         $keys = explode('.', $key);
         $value = self::$config;
