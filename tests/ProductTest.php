@@ -9,12 +9,12 @@ use App\Models\Product;
 
 class ProductTest extends TestCase
 {
-    public function testProductExtendsModel()
+    public function testProductExtendsModel(): void
     {
         $this->assertEquals('App\Core\Model', (new \ReflectionClass(Product::class))->getParentClass()->getName());
     }
 
-    public function testProductTable()
+    public function testProductTable(): void
     {
         $r = new \ReflectionClass(Product::class);
         $p = $r->getProperty('table');
@@ -22,7 +22,7 @@ class ProductTest extends TestCase
         $this->assertEquals('products', $p->getValue(new Product()));
     }
 
-    public function testHasCoreMethods()
+    public function testHasCoreMethods(): void
     {
         foreach (['findBySlug', 'findBySku', 'getByCategory', 'getActive', 'getFeatured', 'getOnSale', 'getLowStock', 'searchProducts', 'updateStock'] as $m) {
             $this->assertTrue(method_exists(Product::class, $m), "Missing: $m");
