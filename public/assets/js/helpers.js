@@ -72,15 +72,26 @@ window.Utils = {
             Utils.showModal(`
                 <div class="modal-header">
                     <h2>${window.I18N.confirm || 'Confirm'}</h2>
-                    <button class="modal-close" onclick="Utils.closeModal()">✕</button>
+                    <button class="modal-close" id="confirmCloseBtn">✕</button>
                 </div>
                 <div class="modal-body"><p>${message}</p></div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" onclick="Utils.closeModal(); resolve(false)">${I18N.cancel}</button>
-                    <button class="btn btn-danger" onclick="Utils.closeModal(); resolve(true)">${I18N.yes}</button>
+                    <button class="btn btn-secondary" id="confirmCancelBtn">${window.I18N.cancel}</button>
+                    <button class="btn btn-danger" id="confirmOkBtn">${window.I18N.yes}</button>
                 </div>
             `);
-            window.resolve = resolve;
+            const cleanup = () => {
+                Utils.closeModal();
+                const cb = Utils.$('#confirmCancelBtn');
+                const ob = Utils.$('#confirmOkBtn');
+                const cl = Utils.$('#confirmCloseBtn');
+                if (cb) cb.onclick = null;
+                if (ob) ob.onclick = null;
+                if (cl) cl.onclick = null;
+            };
+            Utils.$('#confirmCancelBtn').onclick = () => { cleanup(); resolve(false); };
+            Utils.$('#confirmOkBtn').onclick = () => { cleanup(); resolve(true); };
+            Utils.$('#confirmCloseBtn').onclick = () => { cleanup(); resolve(false); };
         });
     },
 

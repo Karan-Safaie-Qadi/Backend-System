@@ -19,7 +19,8 @@ switch ($method) {
             $response = ['status' => 'ok', 'data' => UserService::getStats()];
         } else {
             $page = (int)($_GET['page'] ?? 1);
-            $response = ['status' => 'ok', 'data' => UserService::getAllUsers($page)];
+            $perPage = (int)($_GET['per_page'] ?? 20);
+            $response = ['status' => 'ok', 'data' => UserService::getAllUsers($page, $perPage)];
         }
         break;
     case 'POST':

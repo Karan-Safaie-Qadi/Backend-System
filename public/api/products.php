@@ -22,11 +22,15 @@ switch ($method) {
         } elseif (isset($_GET['low_stock'])) {
             $response = ['status' => 'ok', 'data' => ProductService::getLowStock((int)($_GET['threshold'] ?? 10))];
         } elseif (isset($_GET['category_id'])) {
-            $response = ['status' => 'ok', 'data' => ProductService::getByCategory((int)$_GET['category_id'], (int)($_GET['page'] ?? 1))];
+            $page = (int)($_GET['page'] ?? 1);
+            $perPage = (int)($_GET['per_page'] ?? 20);
+            $response = ['status' => 'ok', 'data' => ProductService::getByCategory((int)$_GET['category_id'], $page, $perPage)];
         } elseif (isset($_GET['stats'])) {
             $response = ['status' => 'ok', 'data' => ProductService::getStats()];
         } else {
-            $response = ['status' => 'ok', 'data' => ProductService::getAllProducts((int)($_GET['page'] ?? 1))];
+            $page = (int)($_GET['page'] ?? 1);
+            $perPage = (int)($_GET['per_page'] ?? 20);
+            $response = ['status' => 'ok', 'data' => ProductService::getAllProducts($page, $perPage)];
         }
         break;
     case 'POST':

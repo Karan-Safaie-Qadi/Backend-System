@@ -16,13 +16,17 @@ switch ($method) {
         } elseif (isset($_GET['search'])) {
             $response = ['status' => 'ok', 'data' => ArticleService::searchArticles($_GET['search'])];
         } elseif (isset($_GET['category_id'])) {
-            $response = ['status' => 'ok', 'data' => ArticleService::getByCategory((int)$_GET['category_id'], (int)($_GET['page'] ?? 1))];
+            $page = (int)($_GET['page'] ?? 1);
+            $perPage = (int)($_GET['per_page'] ?? 20);
+            $response = ['status' => 'ok', 'data' => ArticleService::getByCategory((int)$_GET['category_id'], $page, $perPage)];
         } elseif (isset($_GET['toc'])) {
             $response = ['status' => 'ok', 'data' => ArticleService::getToc((int)$_GET['toc'])];
         } elseif (isset($_GET['stats'])) {
             $response = ['status' => 'ok', 'data' => ArticleService::getStats()];
         } else {
-            $response = ['status' => 'ok', 'data' => ArticleService::getAllArticles((int)($_GET['page'] ?? 1))];
+            $page = (int)($_GET['page'] ?? 1);
+            $perPage = (int)($_GET['per_page'] ?? 20);
+            $response = ['status' => 'ok', 'data' => ArticleService::getAllArticles($page, $perPage)];
         }
         break;
     case 'POST':
