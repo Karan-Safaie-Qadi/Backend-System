@@ -16,9 +16,9 @@ class UserService
         return $user;
     }
 
-    public static function getByUsername(string $username): ?array: ?array { return User::findByUsername($username); }
-    public static function getByEmail(string $email): ?array: ?array { return User::findByEmail($email); }
-    public static function getByPhone(string $phone): ?array: ?array { return User::findByPhone($phone); }
+    public static function getByUsername(string $username): ?array { return User::findByUsername($username); }
+    public static function getByEmail(string $email): ?array { return User::findByEmail($email); }
+    public static function getByPhone(string $phone): ?array { return User::findByPhone($phone); }
 
     public static function getAllUsers(int $page = 1, int $perPage = 20): array
     {
@@ -47,7 +47,7 @@ class UserService
         foreach (['email', 'phone', 'avatar'] as $f) {
             if (!empty($data[$f])) $userData[$f] = $data[$f];
         }
-        return User::find(User::create($userData));
+        return User::find((int)User::create($userData));
     }
 
     public static function updateUser(int $id, array $data, int $actorLevel): array
@@ -72,12 +72,12 @@ class UserService
         User::deleteRecord($id);
     }
 
-    public static function getAdmins(): array: array
+    public static function getAdmins(): array
     {
         return User::getAdmins();
     }
 
-    public static function getStats(): array: array
+    public static function getStats(): array
     {
         return [
             'total' => User::count(),

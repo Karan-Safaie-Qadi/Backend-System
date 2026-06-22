@@ -26,7 +26,7 @@ class ArticleService
             'meta_description' => $data['meta_description'] ?? null,
         ];
         if (!empty($data['is_published'])) $articleData['published_at'] = date('Y-m-d H:i:s');
-        $articleId = Article::create($articleData);
+        $articleId = (int)Article::create($articleData);
         foreach ($sections as $s) {
             ArticleSection::addSection($articleId, $s['title'] ?? '', $s['section_type'] ?? 'text', $s['content'] ?? null, $s['list_items'] ?? null, $s['table_data'] ?? null, $s['image'] ?? null, $s['sort_order'] ?? null);
         }

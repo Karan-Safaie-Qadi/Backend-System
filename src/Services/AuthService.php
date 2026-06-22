@@ -44,7 +44,7 @@ class AuthService
         if (!empty($data['phone'])) $userData['phone'] = $data['phone'];
         if (!empty($data['avatar'])) $userData['avatar'] = $data['avatar'];
 
-        $userId = User::create($userData);
+        $userId = (int)User::create($userData);
         $user = User::find($userId);
         ActivityLog::log($userId, 'register', 'user', $userId, 'User registered');
         return $user;

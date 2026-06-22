@@ -29,7 +29,7 @@ class ProductService
             'is_active' => $data['is_active'] ?? 1,
             'category_id' => $data['category_id'] ?? null,
         ];
-        $productId = Product::create($productData);
+        $productId = (int)Product::create($productData);
         ActivityLog::log($data['_actor_id'] ?? null, 'create_product', 'product', $productId, "Product '{$data['name']}' created");
         return Product::find($productId);
     }
@@ -67,7 +67,7 @@ class ProductService
         return $p;
     }
 
-    public static function getBySlug(string $slug): ?array: ?array { return Product::findBySlug($slug); }
+    public static function getBySlug(string $slug): ?array { return Product::findBySlug($slug); }
 
     public static function getByCategory(int $categoryId, int $page = 1, int $perPage = 20): array
     {
@@ -80,9 +80,9 @@ class ProductService
     public static function getAllProducts(int $page = 1, int $perPage = 20): array { return Product::paginate($page, $perPage); }
     public static function searchProducts(string $query): array { return Product::searchProducts($query); }
     public static function updateStock(int $id, int $quantity): void { Product::updateStock($id, $quantity); }
-    public static function getFeatured(): array: array { return Product::getFeatured(); }
-    public static function getOnSale(): array: array { return Product::getOnSale(); }
-    public static function getLowStock(int $threshold = 10): array: array { return Product::getLowStock($threshold); }
+    public static function getFeatured(): array { return Product::getFeatured(); }
+    public static function getOnSale(): array { return Product::getOnSale(); }
+    public static function getLowStock(int $threshold = 10): array { return Product::getLowStock($threshold); }
 
     public static function getStats(): array
     {
