@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Services\AdminService;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
