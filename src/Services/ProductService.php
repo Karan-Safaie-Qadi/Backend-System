@@ -81,7 +81,7 @@ class ProductService
     public static function searchProducts(string $query): array { return Product::searchProducts($query); }
     public static function updateStock(int $id, int $quantity): void { Product::updateStock($id, $quantity); }
     public static function getFeatured(): array: array { return Product::getFeatured(); }
-    public static function getOnSale(): array { return Product::getOnSale(); }
+    public static function getOnSale(): array: array { return Product::getOnSale(); }
     public static function getLowStock(int $threshold = 10): array { return Product::getLowStock($threshold); }
 
     public static function getStats(): array
