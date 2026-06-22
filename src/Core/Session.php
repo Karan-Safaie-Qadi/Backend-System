@@ -6,9 +6,7 @@ class Session
 {
     public static function start(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) session_start();
     }
 
     public static function set(string $key, $value): void
@@ -39,15 +37,10 @@ class Session
     {
         self::start();
         $_SESSION = [];
-
         if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000,
-                $params['path'], $params['domain'],
-                $params['secure'], $params['httponly']
-            );
+            $p = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
         }
-
         session_destroy();
     }
 
@@ -58,9 +51,8 @@ class Session
             $_SESSION['_flash'][$key] = $value;
             return null;
         }
-
-        $value = $_SESSION['_flash'][$key] ?? null;
+        $val = $_SESSION['_flash'][$key] ?? null;
         unset($_SESSION['_flash'][$key]);
-        return $value;
+        return $val;
     }
 }
