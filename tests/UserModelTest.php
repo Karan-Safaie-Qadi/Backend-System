@@ -9,12 +9,12 @@ use App\Models\User;
 
 class UserModelTest extends TestCase
 {
-    public function testUserExtendsModel()
+    public function testUserExtendsModel(): void
     {
         $this->assertEquals('App\Core\Model', (new \ReflectionClass(User::class))->getParentClass()->getName());
     }
 
-    public function testUserTable()
+    public function testUserTable(): void
     {
         $r = new \ReflectionClass(User::class);
         $p = $r->getProperty('table');
@@ -22,7 +22,7 @@ class UserModelTest extends TestCase
         $this->assertEquals('users', $p->getValue(new User()));
     }
 
-    public function testHasFinderMethods()
+    public function testHasFinderMethods(): void
     {
         $methods = ['findByUsername', 'findByEmail', 'findByPhone', 'findByRememberToken', 'findByPasswordResetToken'];
         foreach ($methods as $m) {
@@ -30,7 +30,7 @@ class UserModelTest extends TestCase
         }
     }
 
-    public function testHasAuthHelperMethods()
+    public function testHasAuthHelperMethods(): void
     {
         $methods = ['updatePassword', 'updateLastLogin', 'setRememberToken', 'clearRememberToken',
                      'verifyEmail', 'verifyPhone', 'isEmailVerified', 'isPhoneVerified', 'isActive'];
@@ -39,7 +39,7 @@ class UserModelTest extends TestCase
         }
     }
 
-    public function testHasAdminMethods()
+    public function testHasAdminMethods(): void
     {
         $methods = ['getAdmins', 'getByAccessLevel', 'getRegularUsers', 'countByAccessLevel'];
         foreach ($methods as $m) {
