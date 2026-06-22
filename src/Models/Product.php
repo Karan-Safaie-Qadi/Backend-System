@@ -47,8 +47,7 @@ class Product extends Model
     public static function getOnSale(): array
     {
         return self::select(
-            "SELECT * FROM products WHERE sale_price IS NOT NULL AND sale_price < price AND is_active = 1
-             ORDER BY sale_price ASC"
+            "SELECT * FROM products WHERE sale_price IS NOT NULL AND sale_price < price AND is_active = 1 ORDER BY sale_price ASC"
         );
     }
 
@@ -63,9 +62,8 @@ class Product extends Model
     public static function searchProducts(string $query): array
     {
         return self::select(
-            "SELECT * FROM products WHERE name LIKE ? OR description LIKE ? OR sku LIKE ?
-             ORDER BY name ASC",
-            ["%$query%", "%$query%", "%$query%"]
+            "SELECT * FROM products WHERE name LIKE ? OR description LIKE ? OR sku LIKE ? ORDER BY name ASC",
+            array_fill(0, 3, "%$query%")
         );
     }
 
@@ -76,18 +74,14 @@ class Product extends Model
 
     public static function decreaseStock(int $id, int $quantity): void
     {
-        $product = self::find($id);
-        if ($product) {
-            $newStock = max(0, $product['stock_quantity'] - $quantity);
-            self::updateStock($id, $newStock);
-        }
+        $p = self::find($id);
+        if ($p) self::updateStock($id, max(0, $p['stock_quantity'] - $quantity));
     }
 
     public static function getLowStock(int $threshold = 10): array
     {
         return self::select(
-            "SELECT * FROM products WHERE stock_quantity <= ? AND stock_quantity > 0 AND is_active = 1
-             ORDER BY stock_quantity ASC",
+            "SELECT * FROM products WHERE stock_quantity <= ? AND stock_quantity > 0 AND is_active = 1 ORDER BY stock_quantity ASC",
             [$threshold]
         );
     }
@@ -96,11 +90,8 @@ class Product extends Model
     {
         return self::select(
             "SELECT p.*, c.name as category_name, c.slug as category_slug
-             FROM products p
-             LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.category_id = ? OR p.category_id IN (
-                SELECT id FROM categories WHERE parent_id = ?
-             )
+             FROM products p LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.category_id = ? OR p.category_id IN (SELECT id FROM categories WHERE parent_id = ?)
              ORDER BY p.name ASC",
             [$categoryId, $categoryId]
         );
@@ -109,25 +100,20 @@ class Product extends Model
     public static function getRelatedProducts(int $productId, int $categoryId, int $limit = 4): array
     {
         return self::select(
-            "SELECT * FROM products WHERE category_id = ? AND id != ? AND is_active = 1
-             ORDER BY RAND() LIMIT ?",
+            "SELECT * FROM products WHERE category_id = ? AND id != ? AND is_active = 1 ORDER BY RAND() LIMIT ?",
             [$categoryId, $productId, $limit]
         );
     }
 
     public static function toggleActive(int $id): void
     {
-        $product = self::find($id);
-        if ($product) {
-            self::updateRecord($id, ['is_active' => $product['is_active'] ? 0 : 1]);
-        }
+        $p = self::find($id);
+        if ($p) self::updateRecord($id, ['is_active' => $p['is_active'] ? 0 : 1]);
     }
 
     public static function toggleFeatured(int $id): void
     {
-        $product = self::find($id);
-        if ($product) {
-            self::updateRecord($id, ['is_featured' => $product['is_featured'] ? 0 : 1]);
-        }
+        $p = self::find($id);
+        if ($p) self::updateRecord($id, ['is_featured' => $p['is_featured'] ? 0 : 1]);
     }
 }
