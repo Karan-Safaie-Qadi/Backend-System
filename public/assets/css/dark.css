@@ -1,0 +1,58 @@
+[data-theme="dark"] {
+    --primary: #a29bfe;
+    --primary-dark: #6c5ce7;
+    --primary-bg: rgba(162, 155, 254, 0.1);
+    --dark: #f5f6fa;
+    --dark-light: #dcdde1;
+    --gray-50: #1a1a2e;
+    --gray-100: #16213e;
+    --gray-200: #0f3460;
+    --gray-300: #1a1a3e;
+    --gray-400: #636e72;
+    --gray-500: #b2bec3;
+    --gray-600: #dcdde1;
+    --gray-700: #f5f6fa;
+    --gray-800: #ffffff;
+    --white: #1a1a2e;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 15px rgba(0,0,0,0.4);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .card,
+[data-theme="dark"] .topbar,
+[data-theme="dark"] .modal,
+[data-theme="dark"] .login-form {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+}
+
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .info-card {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+}
+
+[data-theme="dark"] .form-control {
+    background: var(--gray-50);
+    border-color: var(--gray-300);
+    color: var(--gray-700);
+}
+
+[data-theme="dark"] table th {
+    background: var(--gray-50);
+}
+
+[data-theme="dark"] table td {
+    border-color: var(--gray-300);
+}
+
+[data-theme="dark"] .section-item {
+    background: var(--gray-50);
+}
+
+[data-theme="dark"] pre {
+    background: var(--gray-50) !important;
+    color: var(--gray-600);
+}
