@@ -13,7 +13,6 @@ class Mailer
     {
         if (self::$mailer === null) {
             self::$mailer = new PHPMailer(true);
-
             $host = Config::get('mail.host', '');
             if (!empty($host)) {
                 self::$mailer->isSMTP();
@@ -24,15 +23,11 @@ class Mailer
                 self::$mailer->Password = Config::get('mail.password', '');
                 self::$mailer->SMTPSecure = Config::get('mail.encryption', 'tls');
             }
-
             self::$mailer->CharSet = 'UTF-8';
             self::$mailer->setLanguage('fa');
-
-            $fromAddress = Config::get('mail.from_address', 'noreply@localhost');
-            $fromName = Config::get('mail.from_name', 'Backend System');
-            self::$mailer->setFrom($fromAddress, $fromName);
+            $from = Config::get('mail.from_address', 'noreply@localhost');
+            self::$mailer->setFrom($from, Config::get('mail.from_name', 'Backend System'));
         }
-
         return self::$mailer;
     }
 
@@ -45,31 +40,23 @@ class Mailer
             $mail->Subject = $subject;
             $mail->Body = $body;
             $mail->isHTML($isHtml);
-
-            if (!$isHtml) {
-                $mail->AltBody = strip_tags($body);
-            }
-
+            if (!$isHtml) $mail->AltBody = strip_tags($body);
             return $mail->send();
         } catch (PHPMailerException $e) {
-            $errorInfo = isset($mail) ? $mail->ErrorInfo : $e->getMessage();
-            throw new \RuntimeException("Mail error: " . $errorInfo);
+            $err = isset($mail) ? $mail->ErrorInfo : $e->getMessage();
+            throw new \RuntimeException("Mail error: " . $err);
         }
     }
 
     public static function sendWithTemplate(string $to, string $subject, string $template, array $data = []): bool
     {
-        $body = self::renderTemplate($template, $data);
-        return self::send($to, $subject, $body);
+        return self::send($to, $subject, self::renderTemplate($template, $data));
     }
 
     private static function renderTemplate(string $template, array $data): string
     {
         $path = __DIR__ . '/../../templates/email/' . $template . '.php';
-        if (!file_exists($path)) {
-            throw new \InvalidArgumentException("Email template '$template' not found");
-        }
-
+        if (!file_exists($path)) throw new \InvalidArgumentException("Template '$template' not found");
         extract($data);
         ob_start();
         include $path;
