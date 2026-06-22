@@ -33,7 +33,7 @@ class AccessControl
         return array_flip(self::getLevels())[strtolower($name)] ?? null;
     }
 
-    public static function hasAccess(int $userLevel, $requiredLevel): bool
+    public static function hasAccess(int $userLevel, int|string $requiredLevel): bool
     {
         if (is_string($requiredLevel)) $requiredLevel = self::getLevelValue($requiredLevel);
         return $requiredLevel !== null && $userLevel >= $requiredLevel;
@@ -54,7 +54,7 @@ class AccessControl
         return self::isOwner($userLevel);
     }
 
-    public static function requireLevel(int $userLevel, $requiredLevel): void
+    public static function requireLevel(int $userLevel, int|string $requiredLevel): void
     {
         if (!self::hasAccess($userLevel, $requiredLevel)) {
             throw new \RuntimeException('Access denied. Insufficient permissions.');
