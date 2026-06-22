@@ -44,7 +44,7 @@ class SystemService
         }
     }
 
-    public static function getConfig(string $key, $default = null) { return Config::get($key, $default); }
+    public static function getConfig(string $key, mixed $default = null): mixed { return Config::get($key, $default); }
     public static function setConfig(string $key, $value): void { Config::set($key, $value); }
 
     public static function generateSlug(string $text, string $sep = '-'): string
