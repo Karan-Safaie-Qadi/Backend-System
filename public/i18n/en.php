@@ -125,4 +125,11 @@ return [
     'logged_in_as' => 'Logged in as: %s',
     'logout_btn' => 'Logout',
     'not_logged_in' => 'Not logged in',
+
+    'level_1' => 'User',
+    'level_2' => 'Admin',
+    'level_3' => 'Owner',
+    'back' => 'Back',
+    'status' => 'Status',
+    'login_first' => 'Please login first to manage data',
 ];

@@ -277,7 +277,7 @@ window.Pages = {
         return `
             <div class="login-form">
                 <h2>🔐 ${I18N.login_title}</h2>
-                <p class="subtitle">${I18N.info || 'Sign in to manage data'}</p>
+                <p class="subtitle">${I18N.login_first || 'Sign in to manage data'}</p>
                 <form id="loginForm" onsubmit="event.preventDefault();Pages.login()">
                     <div class="form-group">
                         <label>${I18N.user_username} / ${I18N.user_email}</label>
