@@ -77,7 +77,7 @@ class UserService
         return User::getAdmins();
     }
 
-    public static function getStats(): array
+    public static function getStats(): array: array
     {
         return [
             'total' => User::count(),
