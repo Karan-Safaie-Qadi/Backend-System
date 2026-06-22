@@ -14,29 +14,29 @@ class ConfigTest extends TestCase
         Config::load(__DIR__ . '/../config');
     }
 
-    public function testGetExistingKey()
+    public function testGetExistingKey(): void
     {
         $this->assertEquals('Backend System', Config::get('app.name'));
     }
 
-    public function testGetRegistrationMode()
+    public function testGetRegistrationMode(): void
     {
         $this->assertEquals('email', Config::get('auth.registration_mode'));
     }
 
-    public function testGetDefaultForMissingKey()
+    public function testGetDefaultForMissingKey(): void
     {
         $this->assertNull(Config::get('nonexistent.key'));
         $this->assertEquals('default', Config::get('nonexistent.key', 'default'));
     }
 
-    public function testSetAndGet()
+    public function testSetAndGet(): void
     {
         Config::set('test.key', 'value');
         $this->assertEquals('value', Config::get('test.key'));
     }
 
-    public function testAll()
+    public function testAll(): void
     {
         $all = Config::all();
         $this->assertIsArray($all);
