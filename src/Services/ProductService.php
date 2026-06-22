@@ -10,15 +10,10 @@ class ProductService
 {
     public static function createProduct(array $data): array
     {
-        if (empty($data['name'])) {
-            throw new \InvalidArgumentException('Product name is required.');
-        }
-
-        $slug = self::generateSlug($data['name']);
-
+        if (empty($data['name'])) throw new \InvalidArgumentException('Product name is required.');
         $productData = [
             'name' => $data['name'],
-            'slug' => $slug,
+            'slug' => self::slug($data['name']),
             'description' => $data['description'] ?? null,
             'short_description' => $data['short_description'] ?? null,
             'price' => $data['price'] ?? 0,
@@ -32,157 +27,60 @@ class ProductService
             'is_active' => $data['is_active'] ?? 1,
             'category_id' => $data['category_id'] ?? null,
         ];
-
         $productId = Product::create($productData);
-
-        ActivityLog::log(
-            $data['_actor_id'] ?? null,
-            'create_product',
-            'product',
-            $productId,
-            "Product '{$data['name']}' created"
-        );
-
+        ActivityLog::log($data['_actor_id'] ?? null, 'create_product', 'product', $productId, "Product '{$data['name']}' created");
         return Product::find($productId);
     }
 
     public static function updateProduct(int $id, array $data): array
     {
         $product = Product::find($id);
-        if (!$product) {
-            throw new \RuntimeException('Product not found.');
+        if (!$product) throw new \RuntimeException('Product not found.');
+        $update = [];
+        foreach (['name', 'description', 'short_description', 'price', 'sale_price', 'sku', 'stock_quantity', 'main_image', 'is_featured', 'is_active', 'category_id'] as $f) {
+            if (isset($data[$f])) $update[$f] = $data[$f];
         }
-
-        $updateData = [];
-
-        $fields = ['name', 'description', 'short_description', 'price', 'sale_price',
-                   'sku', 'stock_quantity', 'main_image', 'is_featured', 'is_active', 'category_id'];
-
-        foreach ($fields as $field) {
-            if (isset($data[$field])) {
-                $updateData[$field] = $data[$field];
-            }
-        }
-
-        if (isset($data['name']) && $data['name'] !== $product['name']) {
-            $updateData['slug'] = self::generateSlug($data['name'], $id);
-        }
-
-        if (isset($data['gallery'])) {
-            $updateData['gallery'] = json_encode($data['gallery'], JSON_UNESCAPED_UNICODE);
-        }
-        if (isset($data['specifications'])) {
-            $updateData['specifications'] = json_encode($data['specifications'], JSON_UNESCAPED_UNICODE);
-        }
-
-        if (!empty($updateData)) {
-            Product::updateRecord($id, $updateData);
-        }
-
-        ActivityLog::log(
-            $data['_actor_id'] ?? null,
-            'update_product',
-            'product',
-            $id,
-            "Product '{$product['name']}' updated"
-        );
-
+        if (isset($data['name']) && $data['name'] !== $product['name']) $update['slug'] = self::slug($data['name'], $id);
+        if (isset($data['gallery'])) $update['gallery'] = json_encode($data['gallery'], JSON_UNESCAPED_UNICODE);
+        if (isset($data['specifications'])) $update['specifications'] = json_encode($data['specifications'], JSON_UNESCAPED_UNICODE);
+        if ($update) Product::updateRecord($id, $update);
+        ActivityLog::log($data['_actor_id'] ?? null, 'update_product', 'product', $id, "Product '{$product['name']}' updated");
         return Product::find($id);
     }
 
     public static function deleteProduct(int $id, ?int $actorId = null): void
     {
-        $product = Product::find($id);
-        if (!$product) {
-            throw new \RuntimeException('Product not found.');
-        }
-
+        $p = Product::find($id);
+        if (!$p) throw new \RuntimeException('Product not found.');
         Product::deleteRecord($id);
-
-        ActivityLog::log(
-            $actorId,
-            'delete_product',
-            'product',
-            $id,
-            "Product '{$product['name']}' deleted"
-        );
+        ActivityLog::log($actorId, 'delete_product', 'product', $id, "Product '{$p['name']}' deleted");
     }
 
     public static function getProduct(int $id): array
     {
-        $product = Product::find($id);
-        if (!$product) {
-            throw new \RuntimeException('Product not found.');
-        }
-
-        if ($product['gallery']) {
-            $product['gallery'] = json_decode($product['gallery'], true);
-        }
-        if ($product['specifications']) {
-            $product['specifications'] = json_decode($product['specifications'], true);
-        }
-
-        return $product;
+        $p = Product::find($id);
+        if (!$p) throw new \RuntimeException('Product not found.');
+        if ($p['gallery']) $p['gallery'] = json_decode($p['gallery'], true);
+        if ($p['specifications']) $p['specifications'] = json_decode($p['specifications'], true);
+        return $p;
     }
 
-    public static function getBySlug(string $slug): ?array
-    {
-        return Product::findBySlug($slug);
-    }
+    public static function getBySlug(string $slug): ?array { return Product::findBySlug($slug); }
 
     public static function getByCategory(int $categoryId, int $page = 1, int $perPage = 20): array
     {
         $offset = ($page - 1) * $perPage;
-
-        $total = Product::selectOne(
-            "SELECT COUNT(*) as count FROM products WHERE category_id = ?",
-            [$categoryId]
-        );
-        $totalCount = (int)($total['count'] ?? 0);
-
-        $items = Product::select(
-            "SELECT * FROM products WHERE category_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-            [$categoryId, $perPage, $offset]
-        );
-
-        return [
-            'items' => $items,
-            'total' => $totalCount,
-            'page' => $page,
-            'per_page' => $perPage,
-            'total_pages' => ceil($totalCount / $perPage),
-        ];
+        $total = Product::selectOne("SELECT COUNT(*) as c FROM products WHERE category_id = ?", [$categoryId]);
+        $items = Product::select("SELECT * FROM products WHERE category_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?", [$categoryId, $perPage, $offset]);
+        return ['items' => $items, 'total' => (int)($total['c'] ?? 0), 'page' => $page, 'per_page' => $perPage, 'total_pages' => ceil(($total['c'] ?? 0) / $perPage)];
     }
 
-    public static function getAllProducts(int $page = 1, int $perPage = 20): array
-    {
-        return Product::paginate($page, $perPage);
-    }
-
-    public static function searchProducts(string $query): array
-    {
-        return Product::searchProducts($query);
-    }
-
-    public static function updateStock(int $id, int $quantity): void
-    {
-        Product::updateStock($id, $quantity);
-    }
-
-    public static function getFeatured(): array
-    {
-        return Product::getFeatured();
-    }
-
-    public static function getOnSale(): array
-    {
-        return Product::getOnSale();
-    }
-
-    public static function getLowStock(int $threshold = 10): array
-    {
-        return Product::getLowStock($threshold);
-    }
+    public static function getAllProducts(int $page = 1, int $perPage = 20): array { return Product::paginate($page, $perPage); }
+    public static function searchProducts(string $query): array { return Product::searchProducts($query); }
+    public static function updateStock(int $id, int $quantity): void { Product::updateStock($id, $quantity); }
+    public static function getFeatured(): array { return Product::getFeatured(); }
+    public static function getOnSale(): array { return Product::getOnSale(); }
+    public static function getLowStock(int $threshold = 10): array { return Product::getLowStock($threshold); }
 
     public static function getStats(): array
     {
@@ -195,17 +93,11 @@ class ProductService
         ];
     }
 
-    private static function generateSlug(string $name, int $excludeId = null): string
+    private static function slug(string $name, ?int $excludeId = null): string
     {
-        $slug = preg_replace('/[^a-zA-Z0-9\-]/', '-', strtolower(trim($name)));
-        $slug = preg_replace('/-+/', '-', $slug);
-        $slug = trim($slug, '-');
-
+        $slug = trim(preg_replace('/-+/', '-', preg_replace('/[^a-zA-Z0-9\-]/', '-', strtolower(trim($name)))), '-');
         $existing = Product::findBySlug($slug);
-        if ($existing && (!$excludeId || $existing['id'] !== $excludeId)) {
-            $slug .= '-' . uniqid();
-        }
-
+        if ($existing && (!$excludeId || $existing['id'] !== $excludeId)) $slug .= '-' . uniqid();
         return $slug;
     }
 }
