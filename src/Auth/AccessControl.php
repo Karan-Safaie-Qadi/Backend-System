@@ -11,56 +11,40 @@ class AccessControl
     public static function init(): void
     {
         self::$levels = Config::get('access_levels', [
-            1 => 'user',
-            2 => 'admin',
-            3 => 'owner',
+            1 => 'user', 2 => 'admin', 3 => 'owner',
         ]);
     }
 
     public static function getLevels(): array
     {
-        if (self::$levels === null) {
-            self::init();
-        }
+        if (self::$levels === null) self::init();
         return self::$levels;
     }
 
     public static function getLevelName(int $level): string
     {
-        $levels = self::getLevels();
-        return $levels[$level] ?? 'unknown';
+        return self::getLevels()[$level] ?? 'unknown';
     }
 
     public static function getLevelValue(string $name): ?int
     {
-        $levels = self::getLevels();
-        $flipped = array_flip($levels);
-        return $flipped[strtolower($name)] ?? null;
+        return array_flip(self::getLevels())[strtolower($name)] ?? null;
     }
 
     public static function hasAccess(int $userLevel, $requiredLevel): bool
     {
-        if (is_string($requiredLevel)) {
-            $requiredLevel = self::getLevelValue($requiredLevel);
-        }
-
-        if ($requiredLevel === null) {
-            return false;
-        }
-
-        return $userLevel >= $requiredLevel;
+        if (is_string($requiredLevel)) $requiredLevel = self::getLevelValue($requiredLevel);
+        return $requiredLevel !== null && $userLevel >= $requiredLevel;
     }
 
     public static function isAdmin(int $userLevel): bool
     {
-        $adminLevel = self::getLevelValue('admin');
-        return $userLevel >= ($adminLevel ?? 2);
+        return $userLevel >= (self::getLevelValue('admin') ?? 2);
     }
 
     public static function isOwner(int $userLevel): bool
     {
-        $ownerLevel = self::getLevelValue('owner');
-        return $userLevel >= ($ownerLevel ?? 3);
+        return $userLevel >= (self::getLevelValue('owner') ?? 3);
     }
 
     public static function canManageAdmins(int $userLevel): bool
