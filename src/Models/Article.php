@@ -37,18 +37,14 @@ class Article extends Model
     public static function searchArticles(string $query): array
     {
         return self::select(
-            "SELECT * FROM articles WHERE title LIKE ? OR summary LIKE ? OR meta_keywords LIKE ?
-             ORDER BY created_at DESC",
-            ["%$query%", "%$query%", "%$query%"]
+            "SELECT * FROM articles WHERE title LIKE ? OR summary LIKE ? OR meta_keywords LIKE ? ORDER BY created_at DESC",
+            array_fill(0, 3, "%$query%")
         );
     }
 
     public static function publish(int $id): void
     {
-        self::updateRecord($id, [
-            'is_published' => 1,
-            'published_at' => date('Y-m-d H:i:s'),
-        ]);
+        self::updateRecord($id, ['is_published' => 1, 'published_at' => date('Y-m-d H:i:s')]);
     }
 
     public static function unpublish(int $id): void
@@ -59,39 +55,23 @@ class Article extends Model
     public static function getWithSections(int $id): ?array
     {
         $article = self::find($id);
-        if (!$article) {
-            return null;
-        }
-
+        if (!$article) return null;
         $article['sections'] = ArticleSection::getByArticle($id);
-        $article['category'] = null;
-
-        if ($article['category_id']) {
-            $category = Category::find($article['category_id']);
-            $article['category'] = $category;
-        }
-
+        if ($article['category_id']) $article['category'] = Category::find($article['category_id']);
         return $article;
     }
 
     public static function getRecent(int $limit = 10): array
     {
-        return self::select(
-            "SELECT * FROM articles WHERE is_published = 1 ORDER BY published_at DESC LIMIT ?",
-            [$limit]
-        );
+        return self::select("SELECT * FROM articles WHERE is_published = 1 ORDER BY published_at DESC LIMIT ?", [$limit]);
     }
 
     public static function getPopular(int $limit = 10): array
     {
         return self::select(
-            "SELECT a.*, COUNT(al.id) as view_count
-             FROM articles a
+            "SELECT a.*, COUNT(al.id) as view_count FROM articles a
              LEFT JOIN activity_logs al ON al.entity_type = 'article' AND al.entity_id = a.id AND al.action = 'view'
-             WHERE a.is_published = 1
-             GROUP BY a.id
-             ORDER BY view_count DESC
-             LIMIT ?",
+             WHERE a.is_published = 1 GROUP BY a.id ORDER BY view_count DESC LIMIT ?",
             [$limit]
         );
     }
@@ -99,46 +79,26 @@ class Article extends Model
     public static function getByCategoryWithPagination(int $categoryId, int $page = 1, int $perPage = 20): array
     {
         $offset = ($page - 1) * $perPage;
-
-        $total = self::selectOne(
-            "SELECT COUNT(*) as count FROM articles WHERE category_id = ? AND is_published = 1",
-            [$categoryId]
-        );
-        $totalCount = (int)($total['count'] ?? 0);
-
+        $total = self::selectOne("SELECT COUNT(*) as c FROM articles WHERE category_id = ? AND is_published = 1", [$categoryId]);
         $items = self::select(
-            "SELECT * FROM articles WHERE category_id = ? AND is_published = 1
-             ORDER BY published_at DESC LIMIT ? OFFSET ?",
+            "SELECT * FROM articles WHERE category_id = ? AND is_published = 1 ORDER BY published_at DESC LIMIT ? OFFSET ?",
             [$categoryId, $perPage, $offset]
         );
-
-        return [
-            'items' => $items,
-            'total' => $totalCount,
-            'page' => $page,
-            'per_page' => $perPage,
-            'total_pages' => ceil($totalCount / $perPage),
-        ];
+        return ['items' => $items, 'total' => (int)($total['c'] ?? 0), 'page' => $page, 'per_page' => $perPage, 'total_pages' => ceil(($total['c'] ?? 0) / $perPage)];
     }
 
     public static function getArchiveByMonth(): array
     {
         return self::select(
-            "SELECT DATE_FORMAT(published_at, '%Y-%m') as month,
-                    DATE_FORMAT(published_at, '%M %Y') as month_name,
-                    COUNT(*) as count
-             FROM articles
-             WHERE is_published = 1
-             GROUP BY month, month_name
-             ORDER BY month DESC"
+            "SELECT DATE_FORMAT(published_at, '%Y-%m') as month, DATE_FORMAT(published_at, '%M %Y') as month_name, COUNT(*) as count
+             FROM articles WHERE is_published = 1 GROUP BY month, month_name ORDER BY month DESC"
         );
     }
 
     public static function getRelatedArticles(int $articleId, int $categoryId, int $limit = 4): array
     {
         return self::select(
-            "SELECT * FROM articles WHERE category_id = ? AND id != ? AND is_published = 1
-             ORDER BY RAND() LIMIT ?",
+            "SELECT * FROM articles WHERE category_id = ? AND id != ? AND is_published = 1 ORDER BY RAND() LIMIT ?",
             [$categoryId, $articleId, $limit]
         );
     }
