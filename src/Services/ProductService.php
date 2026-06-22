@@ -67,7 +67,7 @@ class ProductService
         return $p;
     }
 
-    public static function getBySlug(string $slug): ?array { return Product::findBySlug($slug); }
+    public static function getBySlug(string $slug): ?array: ?array { return Product::findBySlug($slug); }
 
     public static function getByCategory(int $categoryId, int $page = 1, int $perPage = 20): array
     {
