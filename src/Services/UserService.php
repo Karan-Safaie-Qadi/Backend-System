@@ -18,7 +18,7 @@ class UserService
 
     public static function getByUsername(string $username): ?array: ?array { return User::findByUsername($username); }
     public static function getByEmail(string $email): ?array: ?array { return User::findByEmail($email); }
-    public static function getByPhone(string $phone): ?array { return User::findByPhone($phone); }
+    public static function getByPhone(string $phone): ?array: ?array { return User::findByPhone($phone); }
 
     public static function getAllUsers(int $page = 1, int $perPage = 20): array
     {
