@@ -10,12 +10,12 @@ use App\Models\ArticleSection;
 
 class ArticleTest extends TestCase
 {
-    public function testArticleExtendsModel()
+    public function testArticleExtendsModel(): void
     {
         $this->assertEquals('App\Core\Model', (new \ReflectionClass(Article::class))->getParentClass()->getName());
     }
 
-    public function testArticleTable()
+    public function testArticleTable(): void
     {
         $r = new \ReflectionClass(Article::class);
         $p = $r->getProperty('table');
@@ -23,14 +23,14 @@ class ArticleTest extends TestCase
         $this->assertEquals('articles', $p->getValue(new Article()));
     }
 
-    public function testArticleHasMethods()
+    public function testArticleHasMethods(): void
     {
         foreach (['findBySlug', 'getByCategory', 'getPublished', 'getDrafts', 'publish', 'unpublish', 'getWithSections', 'getArchiveByMonth'] as $m) {
             $this->assertTrue(method_exists(Article::class, $m), "Missing: $m");
         }
     }
 
-    public function testArticleSectionTypes()
+    public function testArticleSectionTypes(): void
     {
         $this->assertEquals('text', ArticleSection::TYPE_TEXT);
         $this->assertEquals('list', ArticleSection::TYPE_LIST);
@@ -39,7 +39,7 @@ class ArticleTest extends TestCase
         $this->assertEquals('mixed', ArticleSection::TYPE_MIXED);
     }
 
-    public function testArticleSectionHasMethods()
+    public function testArticleSectionHasMethods(): void
     {
         foreach (['getByArticle', 'addSection', 'getTableOfContents', 'reorder', 'deleteByArticle'] as $m) {
             $this->assertTrue(method_exists(ArticleSection::class, $m), "Missing: $m");
