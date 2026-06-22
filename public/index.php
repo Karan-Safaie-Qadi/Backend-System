@@ -18,8 +18,10 @@ function setActive($path) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $i18n['app_title'] ?> - Backend System</title>
     <link rel="stylesheet" href="assets/css/style.css?v=1.0">
+    <link rel="stylesheet" href="assets/css/dark.css?v=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <script>
         window.I18N = <?= json_encode($i18n, JSON_UNESCAPED_UNICODE) ?>;
         window.LANG = '<?= $lang ?>';
@@ -74,6 +76,7 @@ function setActive($path) {
                     <h1 id="pageTitle" data-i18n="page_dashboard">Dashboard</h1>
                 </div>
                 <div class="topbar-actions">
+                    <button class="theme-toggle" id="themeToggle" onclick="Theme.toggle()" title="Toggle theme">🌓</button>
                     <div class="connection-status" id="connStatus">
                         <span class="status-dot"></span>
                         <span data-i18n="checking">Checking...</span>
