@@ -17,7 +17,7 @@ class Session
         $_SESSION[$key] = $value;
     }
 
-    public static function get(string $key, $default = null)
+    public static function get(string $key, mixed $default = null): mixed
     {
         self::start();
         return $_SESSION[$key] ?? $default;
