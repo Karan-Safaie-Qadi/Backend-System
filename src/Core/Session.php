@@ -46,7 +46,7 @@ class Session
         session_destroy();
     }
 
-    public static function flash(string $key, $value = null)
+    public static function flash(string $key, mixed $value = null): mixed
     {
         self::start();
         if ($value !== null) {
