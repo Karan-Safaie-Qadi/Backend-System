@@ -12,7 +12,7 @@ use App\Services\AdminService;
 
 class ServicesTest extends TestCase
 {
-    public function testUserServiceHasMethods()
+    public function testUserServiceHasMethods(): void
     {
         $methods = ['getUser', 'getAllUsers', 'searchUsers', 'createUser', 'getStats'];
         foreach ($methods as $m) {
@@ -20,7 +20,7 @@ class ServicesTest extends TestCase
         }
     }
 
-    public function testProductServiceHasMethods()
+    public function testProductServiceHasMethods(): void
     {
         $methods = ['createProduct', 'updateProduct', 'deleteProduct', 'getProduct', 'getAllProducts', 'searchProducts', 'getFeatured', 'getStats'];
         foreach ($methods as $m) {
@@ -28,7 +28,7 @@ class ServicesTest extends TestCase
         }
     }
 
-    public function testArticleServiceHasMethods()
+    public function testArticleServiceHasMethods(): void
     {
         $methods = ['createArticle', 'updateArticle', 'deleteArticle', 'getArticle', 'getAllArticles', 'searchArticles', 'publishArticle', 'getStats'];
         foreach ($methods as $m) {
@@ -36,7 +36,7 @@ class ServicesTest extends TestCase
         }
     }
 
-    public function testAdminServiceHasMethods()
+    public function testAdminServiceHasMethods(): void
     {
         $methods = ['getDashboardStats', 'getAllUsers', 'getAdmins', 'addAdmin', 'removeAdmin', 'transferOwnership', 'getSystemInfo'];
         foreach ($methods as $m) {
@@ -44,7 +44,7 @@ class ServicesTest extends TestCase
         }
     }
 
-    public function testGetNonExistentUser()
+    public function testGetNonExistentUser(): void
     {
         $this->expectException(\RuntimeException::class);
         UserService::getUser(99999);
