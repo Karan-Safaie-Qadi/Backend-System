@@ -50,7 +50,7 @@ class Mailer
         }
     }
 
-    public static function sendWithTemplate(string $to, string $subject, string $template, array $data = []): bool: bool
+    public static function sendWithTemplate(string $to, string $subject, string $template, array $data = []): bool
     {
         return self::send($to, $subject, self::renderTemplate($template, $data));
     }
