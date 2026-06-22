@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Services\AuthService;
 use App\Core\Config;
 use App\Auth\AccessControl;
